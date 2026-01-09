@@ -9,7 +9,9 @@ export async function runPythonBackground(
     args: string[]
 ) {
     const scriptPath = path.join(process.cwd(), script);
-    const command = `python "${scriptPath}" ${args.join(" ")}`;
+    // Use 'python' on Windows, 'python3' on Linux/Mac (Docker)
+    const pythonCommand = process.platform === "win32" ? "python" : "python3";
+    const command = `${pythonCommand} "${scriptPath}" ${args.join(" ")}`;
 
     try {
         const { stdout, stderr } = await execPromise(command, { maxBuffer: 1024 * 1024 * 5 }); // 5MB Buffer
