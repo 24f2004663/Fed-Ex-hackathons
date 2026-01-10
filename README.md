@@ -1,5 +1,9 @@
 # FedEx Smart Recovery: AI-Driven Debt Collection & Allocation Engine
 
+[![Live Deployment](https://img.shields.io/badge/Live-Deployment-blue?style=for-the-badge&logo=vercel)](https://fedex-recovery.onrender.com/)
+
+[**🔗 Visit Live Application: https://fedex-recovery.onrender.com**](https://fedex-recovery.onrender.com/)
+
 ## 🚀 Problem Statement
 In the traditional logistics and supply chain debt recovery process, **allocating delinquent accounts to collection agencies is often manual, biased, and inefficient.**
 
