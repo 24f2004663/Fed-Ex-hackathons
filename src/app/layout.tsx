@@ -26,6 +26,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {children}
+        <footer className="w-full py-6 mt-8 border-t border-gray-200 bg-white">
+          <div className="container mx-auto px-4 text-center">
+            <h3 className="font-semibold text-gray-800">Contact & Queries</h3>
+            <p className="text-gray-600 mt-1">
+              Email: <a href="mailto:teamseekers01@gmail.com" className="text-[var(--color-primary)] hover:underline">teamseekers01@gmail.com</a>
+            </p>
+          </div>
+        </footer>
       </body>
     </html>
   );

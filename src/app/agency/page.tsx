@@ -1,4 +1,5 @@
 import prisma from '@/lib/db';
+import Image from 'next/image';
 import { Card } from '@/components/Card';
 import { Badge } from '@/components/Badge';
 import { ShieldCheck } from 'lucide-react';
@@ -53,15 +54,27 @@ export default async function AgencyPortalPage() {
 
     return (
         <main className="min-h-screen bg-gray-50 p-8">
-            <header className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-2xl font-bold flex items-center gap-2 text-gray-800">
+            <header className="grid grid-cols-3 items-center mb-8 bg-[#0B0F19] p-4 rounded-xl shadow-sm">
+                <div className="justify-self-start">
+                    <h1 className="text-2xl font-bold flex items-center gap-2 text-white">
                         <ShieldCheck className="text-[var(--color-primary)]" />
                         FedEx Agency Portal
                     </h1>
-                    <p className="text-gray-500">Authorized Partner View: {currentAgencyName}</p>
+                    <p className="text-gray-400">Authorized Partner View: {currentAgencyName}</p>
                 </div>
-                <div className="flex items-center gap-4">
+
+                <div className="justify-self-center">
+                    <Image
+                        src="/team-seekers-logo-v2.png"
+                        alt="Team Seekers"
+                        width={150}
+                        height={150}
+                        className="h-24 w-auto"
+                        priority
+                    />
+                </div>
+
+                <div className="flex items-center gap-4 justify-self-end">
                     <div className="flex gap-4 p-2 bg-white rounded-lg shadow-sm">
                         <div className="text-center px-4 border-r">
                             <span className="block text-2xl font-bold text-gray-800">{cases.length}</span>

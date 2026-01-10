@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import ImportDropdown from '@/components/ImportDropdown';
 import LogoutButton from '@/components/LogoutButton';
 import prisma from '@/lib/db';
@@ -62,12 +63,24 @@ export default async function DashboardPage() {
   return (
     <main className="min-h-screen bg-gray-50 p-8">
       {/* 1. Header with Import Action */}
-      <header className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-[var(--color-primary)]">FedEx Smart Recovery</h1>
-          <p className="text-gray-500">AI-Driven Debt Collections Command Center</p>
+      <header className="grid grid-cols-3 items-center mb-8 bg-[#0B0F19] p-4 rounded-xl shadow-sm">
+        <div className="justify-self-start">
+          <h1 className="text-3xl font-bold text-white">FedEx Smart Recovery</h1>
+          <p className="text-gray-400">AI-Driven Debt Collections Command Center</p>
         </div>
-        <div className="flex gap-4">
+
+        <div className="justify-self-center">
+          <Image
+            src="/team-seekers-logo-v2.png"
+            alt="Team Seekers"
+            width={150}
+            height={150}
+            className="h-24 w-auto"
+            priority
+          />
+        </div>
+
+        <div className="flex gap-4 justify-self-end">
           <ImportDropdown />
           <LogoutButton />
         </div>
