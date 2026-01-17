@@ -2,11 +2,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, FileSpreadsheet, Database, Loader2, RefreshCcw } from 'lucide-react';
-import { ingestMockData, resetDatabase } from '@/app/actions';
+import { ingestMockData, resetDatabase, testAndSyncDatabase } from '@/app/actions';
+import { ConnectDatabaseModal } from './ConnectDatabaseModal';
 import clsx from 'clsx';
 
 export default function ImportDropdown() {
     const [isOpen, setIsOpen] = useState(false);
+    const [showDbModal, setShowDbModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [status, setStatus] = useState<'IDLE' | 'CONNECTING' | 'IMPORTING' | 'CLEANING'>('IDLE');
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -23,13 +25,25 @@ export default function ImportDropdown() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isOpen]);
 
-    const handleConnectDB = async () => {
+    const handleConnectDB = () => {
         setIsOpen(false);
+        setShowDbModal(true);
+    };
+
+    const handleDbSubmit = async (config: any) => {
+        setShowDbModal(false);
         setStatus('CONNECTING');
-        // Simulate Connection Delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        console.log("Database Connection Successful! (Mock)");
-        setStatus('IDLE');
+        try {
+            const res = await testAndSyncDatabase(config);
+            if (!res.success) throw new Error(res.error);
+            setStatus('IDLE');
+            // Success! 
+            return true;
+        } catch (e) {
+            console.error(e);
+            setStatus('IDLE');
+            return false;
+        }
     };
 
     const handleImportExcel = async () => {
@@ -89,7 +103,7 @@ export default function ImportDropdown() {
                             <FileSpreadsheet className="w-4 h-4 text-green-600" />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-gray-700">Import Excel</p>
+                            <p className="text-sm font-semibold text-gray-700">Import Demo Excel</p>
                             <p className="text-xs text-gray-400">Legacy AR Data (CSV)</p>
                         </div>
                     </button>
@@ -120,6 +134,13 @@ export default function ImportDropdown() {
                         </div>
                     </button>
                 </div>
+            )}
+
+            {showDbModal && (
+                <ConnectDatabaseModal
+                    onClose={() => setShowDbModal(false)}
+                    onConnect={handleDbSubmit}
+                />
             )}
         </div>
     );

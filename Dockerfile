@@ -1,7 +1,6 @@
-# 1. Base image with Node.js and OS libraries
+# 1. Base image with common dependencies
 FROM node:20-bookworm-slim AS base
-
-# 2. Install Python 3 and build tools
+# Install Python and dependencies needed for both build and runtime
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
@@ -10,24 +9,50 @@ RUN apt-get update && apt-get install -y \
     openssl \
     && rm -rf /var/lib/apt/lists/*
 
-# 3. Set working directory
+# 2. Dependencies
+FROM base AS deps
 WORKDIR /app
-
-# 4. Copy package files and install dependencies
-COPY package*.json ./
+COPY package.json package-lock.json ./
 RUN npm ci
 
-# 5. Copy the rest of the application
+# 3. Builder
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# 6. Generate Prisma Client
 RUN npx prisma generate
-
-# 7. Build the Next.js application
 RUN npm run build
 
-# 8. Expose the port
-EXPOSE 3000
+# 4. Runner
+FROM base AS runner
+WORKDIR /app
+ENV NODE_ENV=production
 
-# 9. Start the application
-CMD ["sh", "-c", "npx prisma db push && node prisma/simulate_pipeline.js && npm start"]
+# Don't run as root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy public assets
+COPY --from=builder /app/public ./public
+
+# Copy standalone build
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copy specific files needed for runtime (Python scripts, Prisma, etc.)
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/*.py ./
+COPY --from=builder --chown=nextjs:nodejs /app/*.txt ./
+# Copy data directory if it exists
+COPY --from=builder --chown=nextjs:nodejs /app/data ./data
+
+USER nextjs
+
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Note: In standalone mode, we run 'node server.js'.
+# However, we also need to seed the DB.
+# We chain the commands.
+CMD ["sh", "-c", "npx prisma db push && node prisma/simulate_pipeline.js && node server.js"]
