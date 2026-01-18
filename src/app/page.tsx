@@ -11,8 +11,6 @@ import { SessionGuard } from '@/components/SessionGuard';
 import { auth } from '@/auth';
 import AutoAllocateButton from '@/components/AutoAllocateButton';
 
-export const dynamic = 'force-dynamic';
-
 async function getDashboardData() {
   const rawCases = await prisma.case.findMany({
     include: {
